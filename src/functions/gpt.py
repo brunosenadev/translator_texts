@@ -33,6 +33,7 @@ def update_user_gpt(db: Session, gpt_config_id: int,  gpt_config: GPTConfigBase)
 
 def instance_gpt(db: Session, id_user: int):
     openai.api_key = get_api_key(db, id_user)
+    return openai
 
 def send_message_to_gpt(message: str, model: str, agent_rules: str, gpt: openai):
     response = gpt.ChatCompletion.create(
@@ -45,5 +46,10 @@ def send_message_to_gpt(message: str, model: str, agent_rules: str, gpt: openai)
 
     response_of_gpt = response['choices'][0]['messages']['content']
     return response_of_gpt
+
+def delete_user_gpt(db: Session, user_gpt: GPTConfig):
+    db.delete(user_gpt)
+    db.commit()
+    return user_gpt
 
 

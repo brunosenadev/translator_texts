@@ -8,6 +8,13 @@ class GPTConfigBase(BaseModel):
 class GPTConfigCreate(BaseModel):
     pass
 
+class GPTRequest(BaseModel):
+    message: str
+    model: str
+
+class GPTResponse(BaseModel):
+    response: str
+
 class GPTConfig(GPTConfigBase):
     id: int
 

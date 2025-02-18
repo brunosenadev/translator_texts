@@ -28,7 +28,7 @@ def update_agent(db: Session, agent_id: int, agent_updated: AgentGPTBase):
 def delete_agent(db: Session, agent_id: int):
     agent_founded = get_agent(db, agent_id)
     db.delete(agent_founded)
-    db.commit(agent_founded)
+    db.commit()
 
     return agent_founded
 
