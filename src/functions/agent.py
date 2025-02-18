@@ -2,8 +2,11 @@ from sqlalchemy.orm import Session
 from models import Agent
 from schemas import AgentGPTBase, AgentGPTCreate
 
-def get_agent(db: Session, agent_id: id):
+def get_agent(db: Session, agent_id: int):
     return db.query(Agent).filter(Agent.id == agent_id).first()
+
+def get_agent_rules(db: Session, agent_id: int):
+    return db.query(Agent.rules_agent).filter(Agent.id == agent_id).first()
 
 def create_agent(db: Session, agent: AgentGPTCreate):
     agent_created = Agent(**agent.dict())

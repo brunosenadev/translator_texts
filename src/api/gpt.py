@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from schemas import GPTConfigBase, GPTConfigCreate, GPTRequest, GPTResponse
 from models import GPTConfig
-from functions import create_user_gpt, get_user_gpt, update_user_gpt, delete_user_gpt, send_message_to_gpt, instance_gpt
+from functions import create_user_gpt, get_user_gpt, update_user_gpt, delete_user_gpt, send_message_to_gpt, instance_gpt, get_agent_rules
 
 router_gpt = APIRouter()
 
@@ -60,7 +60,8 @@ def route_delete_gpt_config(user_gpt_id: int, db: Session = Depends(get_db)):
 def route_send_message(request: GPTRequest, user_id: int, db: Session = Depends(get_db)):
     try:
         openai = instance_gpt(db, user_id)
-        gpt_response = send_message_to_gpt(request.message, request.model, request.agent_rules, openai)
+        agent_rules = get_agent_rules(db, user_id)
+        gpt_response = send_message_to_gpt(request.message, request.model, agent_rules, openai)
         return GPTResponse(response=gpt_response)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao se comunicar com o GPT: {e}")
