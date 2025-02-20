@@ -6,7 +6,7 @@ class GPTConfigBase(BaseModel):
     model_gpt: str
 
 class GPTConfigCreate(BaseModel):
-    pass
+    password: str
 
 class GPTRequest(BaseModel):
     message: str
