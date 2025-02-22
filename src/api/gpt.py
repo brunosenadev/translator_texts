@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from schemas import GPTConfigBase, GPTConfigCreate, GPTRequest, GPTResponse
-from models import GPTConfig
+from schemas import GPTConfigBase, GPTConfigCreate, GPTRequest, GPTResponse, GPTConfig
 from functions import create_user_gpt, get_user_gpt, update_user_gpt, delete_user_gpt, send_message_to_gpt, instance_gpt, get_agent_rules
 
 router_gpt = APIRouter()
 
-@router_gpt.post("/gptconfig/create", response_model=GPTConfig, status_code=201)
+@router_gpt.post("/gptconfig/create", response_model=GPTConfigCreate, status_code=201)
 def route_create_new_gpt_config(gpt_config: GPTConfigCreate, db: Session = Depends(get_db)): 
     try:
         new_gpt_config = create_user_gpt(db, gpt_config)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class AgentGPTBase(BaseModel):
     name_agent: str
@@ -12,4 +12,4 @@ class AgentGPT(AgentGPTBase):
     id: int
 
     class Config:
-        orm_mode = True
+        model_config = ConfigDict(from_attributes=True)

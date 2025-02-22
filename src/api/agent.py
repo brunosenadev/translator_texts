@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from schemas import AgentGPTCreate, AgentGPTBase
-from models import Agent
+from schemas import AgentGPTCreate, AgentGPTBase, AgentGPT
 from functions import update_agent, create_agent, delete_agent, get_agent, get_all_agents
 from typing import List
 
 router_agent = APIRouter()
 
-@router_agent.post("/agent/create", response_model=Agent, status_code=201)
+@router_agent.post("/agent/create", response_model=AgentGPT, status_code=201)
 def route_create_new_agent(new_agent: AgentGPTCreate, db: Session = Depends(get_db)):
     try:
         new_agent = create_agent(db, new_agent)
@@ -17,7 +16,7 @@ def route_create_new_agent(new_agent: AgentGPTCreate, db: Session = Depends(get_
     finally:
         return new_agent
     
-@router_agent.get("/agent/{agent_id}", response_model=Agent, status_code=200)
+@router_agent.get("/agent/{agent_id}", response_model=AgentGPT, status_code=200)
 def route_return_agent(agent_id: int, db: Session = Depends(get_db)):
     try:
         agent_founded = get_agent(db, agent_id)
@@ -25,11 +24,11 @@ def route_return_agent(agent_id: int, db: Session = Depends(get_db)):
         if not agent_founded:
             raise HTTPException(status_code=404, detail="Agente não encontrado.")
     except Exception as e:
-        raise HTTPException(detail=400, detail=f"Ocorreu um erro ao buscar o agente! Erro: {e}")
+        raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao buscar o agente! Erro: {e}")
     finally:
         return agent_founded
     
-@router_agent.put("/agent/{agent_id}", response_model=Agent, status_code=200)
+@router_agent.put("/agent/{agent_id}", response_model=AgentGPT, status_code=200)
 def route_update_agent(agent_id: int, agent_att: AgentGPTBase, db: Session = Depends(get_db)):
     try:
         agent_founded = get_agent(db, agent_id)
@@ -43,7 +42,7 @@ def route_update_agent(agent_id: int, agent_att: AgentGPTBase, db: Session = Dep
     finally:
         return agent_updated
     
-@router_agent.delete("/agent/{agent_id}", response_model=Agent, status_code=200)
+@router_agent.delete("/agent/{agent_id}", response_model=AgentGPT, status_code=200)
 def route_delete_agent(agent_id: int, db: Session = Depends(get_db)):
     try:
         agent_founded = get_agent(db, agent_id)
@@ -57,7 +56,7 @@ def route_delete_agent(agent_id: int, db: Session = Depends(get_db)):
     finally:
         return agent_deleted
     
-@router_agent.get("agent", response_model=List[Agent], status_code=200)
+@router_agent.get("agent", response_model=List[AgentGPT], status_code=200)
 def route_get_all_agents(db: Session = Depends(get_db)):
     try:
         agents_list = get_all_agents(db)
