@@ -5,7 +5,7 @@ class GPTConfig(Base):
     __tablename__ = "gpt_config"
 
     id = Column(Integer, primary_key=True, index=True)
-    name_key = Column(Integer, nullable=True)
-    password = Column(String, nullable=True)
+    name_key = Column(Integer, nullable=False, unique=True)
+    password = Column(String, nullable=False)
     api_key = Column(String, nullable=False, unique=True)
     model_gpt = Column(String, nullable=False)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from database import Base
 
 
@@ -8,4 +8,4 @@ class Agent(Base):
     id = Column(Integer, primary_key=True, index=True)
     name_agent = Column(String, nullable=False)
     description_agent = Column(String, nullable=False)
-    rules_agent = Column(String, nullable=False)
+    rules_agent = Column(Text, nullable=False)

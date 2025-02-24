@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models import GPTConfig
-from schemas import GPTConfigBase, GPTConfigCreate
+from schemas import GPTConfigBase, GPTConfigCreate 
 import openai
 
 def get_api_key(db: Session, id_user: str):
@@ -13,7 +13,7 @@ def get_user_gpt(db: Session, id_user: int):
     return db.query(GPTConfig).filter(GPTConfig.id == id_user).first()
 
 def create_user_gpt(db: Session, gpt_config: GPTConfigCreate):
-    gpt_config_created = GPTConfig(**gpt_config.dict())
+    gpt_config_created = GPTConfig(**gpt_config.model_dump())
     db.add(gpt_config_created)
     db.commit()
     db.refresh(gpt_config_created)
@@ -51,5 +51,32 @@ def delete_user_gpt(db: Session, user_gpt: GPTConfig):
     db.delete(user_gpt)
     db.commit()
     return user_gpt
+
+def login_user_gpt(db: Session, name_key: str, password: str):
+    user_loggin = db.query(GPTConfig).filter(GPTConfig.name_key == name_key).first()
+
+    if user_loggin.name_key == name_key:
+        if password == user_loggin.password:
+            return {
+            "user": True,
+            "password": True,
+        }
+        else:
+            return {
+            "user": True,
+            "password": False,
+        }
+    elif user_loggin != name_key:
+        return {
+            "user": False,
+            "password": True,
+        }
+    
+    return {
+        "user": False,
+        "password": False
+    }
+
+
 
 

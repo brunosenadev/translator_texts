@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from models import Agent
 from schemas import AgentGPTBase, AgentGPTCreate
+from base64 import b64decode
+from functions.helpers import clean_richtext, text_processing, paragraph_processing
 
 def get_agent(db: Session, agent_id: int):
     return db.query(Agent).filter(Agent.id == agent_id).first()
@@ -9,7 +11,8 @@ def get_agent_rules(db: Session, agent_id: int):
     return db.query(Agent.rules_agent).filter(Agent.id == agent_id).first()
 
 def create_agent(db: Session, agent: AgentGPTCreate):
-    agent_created = Agent(**agent.dict())
+    agent.rules_agent = b64decode(agent.rules_agent).decode("utf-8")
+    agent_created = Agent(**agent.model_dump())
     db.add(agent_created)
     db.commit()
     db.refresh(agent_created)
@@ -17,6 +20,7 @@ def create_agent(db: Session, agent: AgentGPTCreate):
     return agent_created
 
 def update_agent(db: Session, agent_id: int, agent_updated: AgentGPTBase):
+    agent_updated.rules_agent = b64decode(agent_updated.rules_agent).decode("utf-8")
     agent_old = get_agent(db, agent_id)
     update_data = agent_updated.dict(exclude_unset=True)
     

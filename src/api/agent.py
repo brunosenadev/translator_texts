@@ -56,7 +56,7 @@ def route_delete_agent(agent_id: int, db: Session = Depends(get_db)):
     finally:
         return agent_deleted
     
-@router_agent.get("agent", response_model=List[AgentGPT], status_code=200)
+@router_agent.get("/agent", response_model=List[AgentGPT], status_code=200)
 def route_get_all_agents(db: Session = Depends(get_db)):
     try:
         agents_list = get_all_agents(db)

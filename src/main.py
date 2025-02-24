@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import router_agent, router_gpt
+from api import router_agent, router_gpt, router_login
 from database import create_tables_and_database
 import uvicorn
 
@@ -16,6 +16,7 @@ app.add_middleware(
 
 app.include_router(router_agent)
 app.include_router(router_gpt)
+app.include_router(router_login)
 
 create_tables_and_database()
 
