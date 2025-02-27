@@ -11,10 +11,10 @@ router_agent = APIRouter()
 def route_create_new_agent(new_agent: AgentGPTCreate, db: Session = Depends(get_db)):
     try:
         new_agent = create_agent(db, new_agent)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao cadastrar um agente novo! Erro: {e}" )
-    finally:
+
         return new_agent
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao cadastrar um agente novo! Erro: {e}" )     
     
 @router_agent.get("/agent/{agent_id}", response_model=AgentGPT, status_code=200)
 def route_return_agent(agent_id: int, db: Session = Depends(get_db)):
@@ -23,10 +23,11 @@ def route_return_agent(agent_id: int, db: Session = Depends(get_db)):
 
         if not agent_founded:
             raise HTTPException(status_code=404, detail="Agente não encontrado.")
+        
+        return agent_founded
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao buscar o agente! Erro: {e}")
-    finally:
-        return agent_founded
+        
     
 @router_agent.put("/agent/{agent_id}", response_model=AgentGPT, status_code=200)
 def route_update_agent(agent_id: int, agent_att: AgentGPTBase, db: Session = Depends(get_db)):
@@ -37,10 +38,11 @@ def route_update_agent(agent_id: int, agent_att: AgentGPTBase, db: Session = Dep
             raise HTTPException(status_code=404, detail="Agente não encontrado.")
         
         agent_updated = update_agent(db, agent_id, agent_att)
+
+        return agent_updated
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao atualizar o agente! Erro: {e}")
-    finally:
-        return agent_updated
+        
     
 @router_agent.delete("/agent/{agent_id}", response_model=AgentGPT, status_code=200)
 def route_delete_agent(agent_id: int, db: Session = Depends(get_db)):
@@ -51,10 +53,11 @@ def route_delete_agent(agent_id: int, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="Agente não encontrado.")
         
         agent_deleted = delete_agent(db, agent_id)
+
+        return agent_deleted
     except Exception as e:
         raise HTTPException(status_code=400, detail="Ocorreu um erro ao deletar o agente! Erro: {e}")
-    finally:
-        return agent_deleted
+        
     
 @router_agent.get("/agent", response_model=List[AgentGPT], status_code=200)
 def route_get_all_agents(db: Session = Depends(get_db)):
@@ -63,8 +66,8 @@ def route_get_all_agents(db: Session = Depends(get_db)):
 
         if len(agents_list) == 0:
             raise HTTPException(status_code=404, detail="Nenhum agente encontrado.")
-        
+            
+        return agents_list   
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao buscar os agentes! Erro: {e}")
-    finally:
-        return agents_list
+        

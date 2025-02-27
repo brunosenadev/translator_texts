@@ -10,10 +10,10 @@ router_gpt = APIRouter()
 def route_create_new_gpt_config(gpt_config: GPTConfigCreate, db: Session = Depends(get_db)): 
     try:
         new_gpt_config = create_user_gpt(db, gpt_config)
+
+        return new_gpt_config
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao adicionar um novo usuário! Erro: {e}")
-    finally:
-        return new_gpt_config
     
 @router_gpt.get("gptconfig/{user_gpt_id}", response_model=GPTConfig, status_code=200)
 def route_return_gpt_config(user_gpt_id: int, db: Session = Depends(get_db)):
@@ -22,10 +22,11 @@ def route_return_gpt_config(user_gpt_id: int, db: Session = Depends(get_db)):
 
         if not gpt_config_founded:
             raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        
+        return gpt_config_founded
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao buscar o usuário! Erro: {e}")
-    finally:
-        return gpt_config_founded
+        
     
 @router_gpt.put("gptconfig/{user_gpt_id}", response_model=GPTConfig, status_code=200)
 def route_update_gpt_config(user_gpt_id: int, user_gpt: GPTConfigBase, db: Session = Depends(get_db)):
@@ -36,10 +37,11 @@ def route_update_gpt_config(user_gpt_id: int, user_gpt: GPTConfigBase, db: Sessi
             raise HTTPException(status_code=404, detail="Usuário não encontrado.")
         
         gpt_config_updated = update_user_gpt(db, user_gpt_id, user_gpt)
+
+        return gpt_config_updated
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao atualizar o usuário! Erro: {e}")
-    finally:
-        return gpt_config_updated
+        
 
 @router_gpt.delete("/gptconfig/{user_gpt_id}", response_model=GPTConfig, status_code=200)
 def route_delete_gpt_config(user_gpt_id: int, db: Session = Depends(get_db)):
@@ -50,10 +52,11 @@ def route_delete_gpt_config(user_gpt_id: int, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="Usuário não encontrado.")
 
         gpt_config_deleted = delete_user_gpt(db, gpt_config_founded)
+
+        return gpt_config_deleted
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ocorreu um erro ao deletar o usuário! Erro: {e}")
-    finally:
-        return gpt_config_deleted
+        
     
 @router_gpt.post("/gpt_chat/send_message", response_model=GPTResponse)
 def route_send_message(request: GPTRequest, user_id: int, db: Session = Depends(get_db)):
