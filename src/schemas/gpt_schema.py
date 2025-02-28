@@ -11,6 +11,8 @@ class GPTConfigCreate(GPTConfigBase):
 class GPTRequest(BaseModel):
     message: str
     model: str
+    agent: int
+    name_user: str
 
 class GPTResponse(BaseModel):
     response: str

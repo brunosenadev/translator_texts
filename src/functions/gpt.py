@@ -1,16 +1,27 @@
 from sqlalchemy.orm import Session
 from models import GPTConfig
 from schemas import GPTConfigBase, GPTConfigCreate 
-import openai
+from openai import OpenAI
+from functions.helpers import clean_richtext
+import google.generativeai as genai
+from os import getenv
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_KEY = getenv("GOOGLE_KEY_API")
 
 def get_api_key(db: Session, id_user: str):
-    return db.query(GPTConfig.api_key).filter(GPTConfig.id == id_user).first()
+    return db.query(GPTConfig.api_key).filter(GPTConfig.id == id_user).first()[0]
 
 def get_model_gpt(db: Session, id_user: int):
-    return db.query(GPTConfig.model_gpt).filter(GPTConfig.id == id_user).first()
+    return db.query(GPTConfig.model_gpt).filter(GPTConfig.id == id_user).first()[0]
 
 def get_user_gpt(db: Session, id_user: int):
     return db.query(GPTConfig).filter(GPTConfig.id == id_user).first()
+
+def get_id_user_gpt(db: Session, name_user: str):
+    return db.query(GPTConfig.id).filter(GPTConfig.name_key == name_user).first()[0]
 
 def create_user_gpt(db: Session, gpt_config: GPTConfigCreate):
     gpt_config_created = GPTConfig(**gpt_config.model_dump())
@@ -32,20 +43,24 @@ def update_user_gpt(db: Session, gpt_config_id: int,  gpt_config: GPTConfigBase)
     return gpt_config_old
 
 def instance_gpt(db: Session, id_user: int):
-    openai.api_key = get_api_key(db, id_user)
-    return openai
+    openai_client = OpenAI(api_key=get_api_key(db, id_user))
+    return openai_client
 
-def send_message_to_gpt(message: str, model: str, agent_rules: str, gpt: openai):
-    response = gpt.ChatCompletion.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": agent_rules },
-            {"role": "user", "content": message }
-        ]
-    )
+def send_message_to_gpt(message: str, model: str, agent_rules: str, gpt: OpenAI):
+    try:
+        agent_rules = clean_richtext(agent_rules)
+        response = gpt.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": agent_rules},
+                {"role": "user", "content": message}
+            ]
+        )
 
-    response_of_gpt = response['choices'][0]['messages']['content']
-    return response_of_gpt
+        response_of_gpt = response.choices[0].message.content
+        return response_of_gpt
+    except Exception as e:
+        print(e)
 
 def delete_user_gpt(db: Session, user_gpt: GPTConfig):
     db.delete(user_gpt)

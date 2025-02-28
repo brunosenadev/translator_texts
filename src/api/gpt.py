@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from schemas import GPTConfigBase, GPTConfigCreate, GPTRequest, GPTResponse, GPTConfig
-from functions import create_user_gpt, get_user_gpt, update_user_gpt, delete_user_gpt, send_message_to_gpt, instance_gpt, get_agent_rules
+from functions import create_user_gpt, get_user_gpt, update_user_gpt, delete_user_gpt, send_message_to_gpt, instance_gpt, get_agent_rules, get_id_user_gpt
 
 router_gpt = APIRouter()
 
@@ -59,8 +59,9 @@ def route_delete_gpt_config(user_gpt_id: int, db: Session = Depends(get_db)):
         
     
 @router_gpt.post("/gpt_chat/send_message", response_model=GPTResponse)
-def route_send_message(request: GPTRequest, user_id: int, db: Session = Depends(get_db)):
+def route_send_message(request: GPTRequest, db: Session = Depends(get_db)):
     try:
+        user_id = get_id_user_gpt(db, request.name_user)
         openai = instance_gpt(db, user_id)
         agent_rules = get_agent_rules(db, user_id)
         gpt_response = send_message_to_gpt(request.message, request.model, agent_rules, openai)

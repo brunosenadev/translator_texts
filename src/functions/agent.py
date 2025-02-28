@@ -8,7 +8,7 @@ def get_agent(db: Session, agent_id: int):
     return db.query(Agent).filter(Agent.id == agent_id).first()
 
 def get_agent_rules(db: Session, agent_id: int):
-    return db.query(Agent.rules_agent).filter(Agent.id == agent_id).first()
+    return db.query(Agent.rules_agent).filter(Agent.id == agent_id).first()[0]
 
 def create_agent(db: Session, agent: AgentGPTCreate):
     agent.rules_agent = b64decode(agent.rules_agent).decode("utf-8")
